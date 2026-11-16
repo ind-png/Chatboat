@@ -1,6 +1,9 @@
+import asyncio
+import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 import uvicorn
 
 from core.config import settings, validate_production_settings
@@ -8,6 +11,20 @@ from db.session import engine
 from db.base import Base
 from api.v1.api import api_router
 
+logger = logging.getLogger(__name__)
+
+async def _keep_alive_task():
+    """Background task to ping Supabase periodically to prevent inactivity pause."""
+    while True:
+        try:
+            await asyncio.sleep(60 * 60 * 6)  # Runs every 6 hours
+            async with engine.connect() as conn:
+                await conn.execute(text("SELECT 1"))
+            logger.info("Supabase keep-alive ping successful.")
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            logger.warning(f"Supabase keep-alive ping warning: {e}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -16,7 +33,15 @@ async def lifespan(app: FastAPI):
     if not is_production:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-    yield
+    ping_task = asyncio.create_task(_keep_alive_task())
+    try:
+        yield
+    finally:
+        ping_task.cancel()
+        try:
+            await ping_task
+        except asyncio.CancelledError:
+            pass
 
 
 app = FastAPI(
@@ -50,6 +75,16 @@ def root():
         "service": settings.PROJECT_NAME,
         "docs": "/docs"
     }
+
+
+@app.get("/health/db")
+async def health_db():
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        return {"status": "ok", "database": "connected"}
+    except Exception as e:
+        return {"status": "error", "database": str(e)}
 
 
 if __name__ == "__main__":

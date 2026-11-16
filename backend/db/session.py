@@ -6,6 +6,11 @@ engine = create_async_engine(
     get_async_database_uri(),
     echo=False,
     future=True,
+    pool_size=20,                             
+    max_overflow=30,                     
+    pool_pre_ping=True,                        
+    pool_recycle=300,                         
+    connect_args={"statement_cache_size": 0}, 
 )
 
 AsyncSessionLocal = sessionmaker(
@@ -15,4 +20,3 @@ AsyncSessionLocal = sessionmaker(
 async def get_db():
     async with AsyncSessionLocal() as session:
         yield session
-

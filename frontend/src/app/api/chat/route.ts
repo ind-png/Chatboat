@@ -3,6 +3,9 @@ import { getBackendApiUrl } from '@/lib/backend-api';
 import fs from 'fs';
 import path from 'path';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 type UserSupportRule = {
   triggers: string[];
   answer: string;
@@ -13,7 +16,10 @@ function loadKnowledgeBaseTxt(): { rules: UserSupportRule[]; fallback: string } 
     "Welcome to Saarthi AI. What can I help you with today?";
 
   try {
-    const txtPath = path.join(process.cwd(), 'src', 'app', 'api', 'chat', 'user-support-answers.txt');
+    let txtPath = path.join(process.cwd(), 'src', 'app', 'api', 'chat', 'user-support-answers.txt');
+    if (!fs.existsSync(txtPath)) {
+      txtPath = path.join(process.cwd(), 'frontend', 'src', 'app', 'api', 'chat', 'user-support-answers.txt');
+    }
     if (!fs.existsSync(txtPath)) {
       return { rules: [], fallback: defaultFallback };
     }
@@ -250,6 +256,8 @@ function getUserAnswer(message: string, history?: { sender: string; text: string
   const bestMatch = matchingTriggers.find(({ trigger }) =>
     paddedInput.includes(` ${trigger} `)
   );
+
+  console.log(`[CHAT_MATCH] message="${message}" clean="${cleanInput}" matched_trigger="${bestMatch?.trigger || 'NONE'}"`);
 
   return bestMatch?.rule.answer || fallback;
 }

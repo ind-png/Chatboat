@@ -1,0 +1,31 @@
+name: Supabase Keep-Alive Ping
+
+on:
+  schedule:
+    # Runs every 3 days at 00:00 UTC (preventing 7-day inactivity pause)
+    - cron: '0 0 */3 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install sqlalchemy asyncpg pydantic pydantic-settings python-dotenv
+
+      - name: Ping Supabase Database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql+asyncpg://postgres.bxhpcrattwbqzwdjxwia:Superbase%402005@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?prepared_statement_cache_size=0' }}
+        run: |
+          python backend/scripts/ping_db.py
+

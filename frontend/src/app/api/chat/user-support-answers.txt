@@ -49,7 +49,7 @@ Please select the Hardware Issue you are facing:
 #POWER ISSUES
 ######################################################################POWER ISSUES LIST####################################
 [TRIGGERS]
-Power Issues, power issue, power issues, laptop power issue, pc dead, power problem
+Power Issues, power issue, power issues, laptop power issue, pc dead, power problem, power
 [ANSWER]
 Please select the specific Power Issue you are facing:
 
@@ -82,7 +82,7 @@ Troubleshooting steps for Charger Adapter Issue:
 • Unplug power adapter from wall socket for 2 minutes
 • Check power cord connection between adapter and cable
 • Reconnect adapter directly to wall outlet without extension
-• Inspect cable wire for sharp bends or exposed copper
+• Inspect cable wire for sharp bends or exposed copper  
 • If adapter light stays off replace power adapter via IT
 
 
@@ -984,7 +984,7 @@ Troubleshooting steps for SAP Spool Printing Error:
 
 [TRIGGERS]
 SAP Session Freezing, sap freezing, sap session crash, sap not responding, sap disconnected
-[ANSWER]
+[ANSWER] 
 Troubleshooting steps for SAP GUI Freezing:
 
 • Press Ctrl + Alt + Delete on keyboard
@@ -1096,14 +1096,10 @@ Troubleshooting steps for SAP Export to Excel Failure:
 
 [FALLBACK]
 Welcome to Saarthi AI. What can I help you with today?
-
-Please note: I can only assist with IT-related queries and technical support.
-
 Here are a few topics I can help you with:
 • Hardware Issues
 • Software Issues
 • Printer Issues
 • Computer Issues
 • SAP ERP Issues
-
 Please select one of the topics above or briefly describe the issue you are facing.

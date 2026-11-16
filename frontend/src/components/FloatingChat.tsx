@@ -75,6 +75,21 @@ function createWelcomeChatSession(time: string): ChatSession {
  * - Troubleshooting steps rendered with clean bullet dots (•), normal text, NO cards
  * - Interactive follow-up options with direct ticket opening
  */
+function renderFormattedContent(content: string) {
+  // Support **bold** markdown formatting
+  const parts = content.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+      return (
+        <strong key={index} className="font-extrabold text-slate-950">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+}
+
 function BotMessageRenderer({
   text,
   onOptionClick,
@@ -87,7 +102,7 @@ function BotMessageRenderer({
   // Check if text ends with follow-up question
   const followUpRegex = /Did this resolve your issue, or would you like further assistance\?/i;
   const followUpMatch = text.match(followUpRegex);
-  let mainBody = text;
+  let mainBody = text.replace(/<br\s*\/?>/gi, "\n");
   let hasFollowUp = false;
 
   if (followUpMatch && followUpMatch.index !== undefined) {
@@ -137,13 +152,15 @@ function BotMessageRenderer({
       {/* Header Prompt - Bold and prominent */}
       {headerLines.length > 0 && (
         <div className="font-extrabold text-slate-900 text-[18px] sm:text-[20px] leading-snug tracking-wide">
-          {headerLines.join("\n")}
+          {headerLines.map((line, idx) => (
+            <div key={idx}>{renderFormattedContent(line)}</div>
+          ))}
         </div>
       )}
 
       {/* Selection Menu: Rendered as Gemini cards with dots (NO 1 2 3 4 numbers) */}
       {isMenu && listItems.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 justify-items-start">
           {listItems.map((item, idx) => (
             <button
               key={idx}
@@ -158,12 +175,12 @@ function BotMessageRenderer({
                   onOptionClick(item);
                 }
               }}
-              className="w-full text-left bg-white hover:bg-blue-50 active:bg-blue-100 border border-blue-300 hover:border-blue-500 text-black px-4 py-2.5 rounded-xl font-medium text-[15px] flex items-center justify-between gap-3 transition-all cursor-pointer shadow-sm group active:scale-[0.99]"
+              className="w-fit max-w-full text-left bg-white hover:bg-blue-50 active:bg-blue-100 border border-blue-300 hover:border-blue-500 text-black px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl font-medium text-[14px] sm:text-[15px] inline-flex items-center gap-2.5 transition-all cursor-pointer shadow-sm group active:scale-[0.99]"
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="font-semibold text-black truncate">
-                  {item}
+                <span className="font-semibold text-black">
+                  {renderFormattedContent(item)}
                 </span>
               </div>
               <CornerDownRight className="w-4 h-4 text-blue-700 shrink-0 group-hover:translate-x-0.5 transition-transform" />
@@ -181,7 +198,7 @@ function BotMessageRenderer({
               className="flex items-start gap-3 text-[14.5px] text-slate-700 font-normal leading-relaxed"
             >
               <span className="text-cyan-400 text-lg leading-none select-none mt-0.5">•</span>
-              <span className="flex-1">{item}</span>
+              <span className="flex-1">{renderFormattedContent(item)}</span>
             </div>
           ))}
         </div>
@@ -190,7 +207,9 @@ function BotMessageRenderer({
       {/* Trailing descriptive text */}
       {otherLines.length > 0 && (
         <div className="text-sm text-slate-700 font-normal leading-relaxed pt-1 whitespace-pre-line">
-          {otherLines.join("\n")}
+          {otherLines.map((line, idx) => (
+            <div key={idx}>{renderFormattedContent(line)}</div>
+          ))}
         </div>
       )}
 
