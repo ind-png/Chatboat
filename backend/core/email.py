@@ -6,8 +6,7 @@ from core.config import settings
 logger = logging.getLogger(__name__)
 
 
-def _send_email(message: EmailMessage) -> None:
-    return 
+def _send_email(message: EmailMessage) -> None: 
     host = settings.SMTP_HOST
     username = settings.SMTP_USERNAME
     password = settings.SMTP_PASSWORD
@@ -23,10 +22,6 @@ def _send_email(message: EmailMessage) -> None:
 
 
 async def _send_otp_email(recipient: str, otp: str, purpose: str) -> None:
-    print("\n" + "=" * 40)
-    print(f"  OTP FOR {recipient}: {otp}")
-    print("=" * 40 + "\n")
-    return
     message = EmailMessage()
     message["Subject"] = f"Your {purpose} verification code"
     message["To"] = recipient

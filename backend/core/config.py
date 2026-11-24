@@ -1,7 +1,12 @@
+import os
+from pathlib import Path
 from typing import List, Optional
 
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
+
+_BACKEND_DIR = Path(__file__).resolve().parent.parent
+_ENV_FILE = _BACKEND_DIR / ".env"
 
 
 class Settings(BaseSettings):
@@ -33,7 +38,7 @@ class Settings(BaseSettings):
 
     model_config = ConfigDict(
         case_sensitive=True,
-        env_file=".env",
+        env_file=str(_ENV_FILE) if _ENV_FILE.exists() else ".env",
         extra="ignore"
     )
 
