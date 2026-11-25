@@ -27,7 +27,7 @@ async def _send_otp_email(recipient: str, otp: str, purpose: str) -> None:
     message["To"] = recipient
     message.set_content(
         f"Your {purpose} verification code is {otp}.\n\n"
-        "This code expires in 5 minutes. If you did not request it, "
+        "This code expires in 2 minutes. If you did not request it, "
         "you can ignore this email."
     )
 

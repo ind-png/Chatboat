@@ -20,7 +20,7 @@ from schemas.user import Token, UserCreate, VerifyOTPRequest
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-OTP_TTL_MINUTES = 5
+OTP_TTL_MINUTES = 2
 MAX_OTP_ATTEMPTS = 5
 
 
